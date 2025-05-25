@@ -46,7 +46,7 @@ const commands = [
         description: 'Fetch CF data for a user',
         options: [
             {
-                handle: 'user',
+                name: 'handle',
                 type: 3, 
                 description: 'The CF handle to fetch data for',
                 required: true
@@ -62,7 +62,7 @@ const rest = new REST({ version: '9' }).setToken(TOKEN);
         console.log('Started refreshing application (/) commands globally.');
 
         
-        await rest.put(Routes.applicationCommands(CLIENT_ID, GUILD_ID), { body: commands });
+        await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 
         console.log('Successfully reloaded application (/) commands globally.');
     } catch (error) {
@@ -87,11 +87,9 @@ client.on('interactionCreate', async (interaction) => {
         await interaction.reply(`hi ${interaction.user.username}`);
     }
     if (commandName === 'cf') {
-        const user = interaction.options.getUser('handle');
+        const cfHandle = interaction.options.getString('handle');
         console.log("bot command received");
-        if (user) {
-            // Example: Use Discord username as CF handle (customize as needed)
-            const cfHandle = user.username;
+        if (cfHandle) {
             try {
                 const response = await fetch(`https://codeforces.com/api/user.info?handles=${cfHandle}`);
                 const data = await response.json();
