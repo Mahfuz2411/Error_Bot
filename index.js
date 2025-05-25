@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
-const GUILD_ID = process.env.GUILD_ID; 
+const GUILD_ID = process.env.GUILD_ID;
 
 app.get('/', (req, res) => {
     res.send('Bot is alive!');
@@ -47,7 +47,7 @@ const commands = [
         options: [
             {
                 name: 'handle',
-                type: 3, 
+                type: 3,
                 description: 'The CF handle to fetch data for',
                 required: true
             }
@@ -61,7 +61,7 @@ const rest = new REST({ version: '9' }).setToken(TOKEN);
     try {
         console.log('Started refreshing application (/) commands globally.');
 
-        
+
         await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 
         console.log('Successfully reloaded application (/) commands globally.');
@@ -71,64 +71,68 @@ const rest = new REST({ version: '9' }).setToken(TOKEN);
 })();
 
 // Handle interactions
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isCommand()) return;
+try {
+    client.on('interactionCreate', async (interaction) => {
+        if (!interaction.isCommand()) return;
 
-    // console.log('Interaction received:', interaction);
+        // console.log('Interaction received:', interaction);
 
-    const { commandName } = interaction;
+        const { commandName } = interaction;
 
-    if (commandName === 'ping') {
-        console.log("bot command received");
-        await interaction.reply('ping pong!!');
-    }
-    if (commandName === 'hello') {
-        console.log("bot command received");
-        await interaction.reply(`hi ${interaction.user.username}`);
-    }
-    if (commandName === 'cf') {
-        const cfHandle = interaction.options.getString('handle');
-        console.log("bot command received");
-        if (cfHandle) {
-            try {
-                await interaction.deferReply();
-                const response = await fetch(`https://codeforces.com/api/user.info?handles=${cfHandle}`);
-                const data = await response.json();
-                if (data.status === "OK") {
-                    const info = data.result[0];
+        if (commandName === 'ping') {
+            console.log("bot command received");
+            await interaction.reply('ping pong!!');
+        }
+        if (commandName === 'hello') {
+            console.log("bot command received");
+            await interaction.reply(`hi ${interaction.user.username}`);
+        }
+        if (commandName === 'cf') {
+            const cfHandle = interaction.options.getString('handle');
+            console.log("bot command received");
+            if (cfHandle) {
+                try {
+                    await interaction.deferReply();
+                    const response = await fetch(`https://codeforces.com/api/user.info?handles=${cfHandle}`);
+                    const data = await response.json();
+                    if (data.status === "OK") {
+                        const info = data.result[0];
 
-                    // Get solved problems
-                    const statusRes = await fetch(`https://codeforces.com/api/user.status?handle=${cfHandle}`);
-                    const statusData = await statusRes.json();
-                    let solvedSet = new Set();
-                    if (statusData.status === "OK") {
-                        for (const sub of statusData.result) {
-                            if (sub.verdict === "OK" && sub.problem) {
-                                solvedSet.add(`${sub.problem.contestId}-${sub.problem.index}`);
+                        // Get solved problems
+                        const statusRes = await fetch(`https://codeforces.com/api/user.status?handle=${cfHandle}`);
+                        const statusData = await statusRes.json();
+                        let solvedSet = new Set();
+                        if (statusData.status === "OK") {
+                            for (const sub of statusData.result) {
+                                if (sub.verdict === "OK" && sub.problem) {
+                                    solvedSet.add(`${sub.problem.contestId}-${sub.problem.index}`);
+                                }
                             }
                         }
-                    }
-                    const solvedCount = solvedSet.size;
+                        const solvedCount = solvedSet.size;
 
-                    await interaction.reply(
-                        `CF Handle: ${info?.handle}\nRating: ${info?.rating || "Unrated"}\nRank: ${info?.rank || "N/A"}\nProfile: https://codeforces.com/profile/${info?.handle}\nContribution: ${info?.contribution || "N/A"}\nFriend of: ${info?.friendOfCount || 0} users\nOrganization: ${info?.organization || "None"}\nLast Online: ${new Date(info?.lastOnlineTimeSeconds * 1000).toLocaleString()}\nsolved problems: ${solvedCount || 0}`
-                    );
-                } else {
-                    await interaction.reply(`CF user not found for handle: ${cfHandle}`);
+                        await interaction.reply(
+                            `CF Handle: ${info?.handle}\nRating: ${info?.rating || "Unrated"}\nRank: ${info?.rank || "N/A"}\nProfile: https://codeforces.com/profile/${info?.handle}\nContribution: ${info?.contribution || "N/A"}\nFriend of: ${info?.friendOfCount || 0} users\nOrganization: ${info?.organization || "None"}\nLast Online: ${new Date(info?.lastOnlineTimeSeconds * 1000).toLocaleString()}\nsolved problems: ${solvedCount || 0}`
+                        );
+                    } else {
+                        await interaction.reply(`CF user not found for handle: ${cfHandle}`);
+                    }
+                } catch (err) {
+                    await interaction.reply('Error fetching CF user info.');
                 }
-            } catch (err) {
-                await interaction.reply('Error fetching CF user info.');
+            } else {
+                await interaction.reply('User not found.');
             }
-        } else {
-            await interaction.reply('User not found.');
         }
-    }
-    if (commandName === 'list') {
-        console.log("bot command received");
-        const commandList = commands.map(cmd => `/${cmd.name} - ${cmd.description}`).join('\n');
-        await interaction.reply(`Available commands:\n${commandList}`);
-    }
-});
+        if (commandName === 'list') {
+            console.log("bot command received");
+            const commandList = commands.map(cmd => `/${cmd.name} - ${cmd.description}`).join('\n');
+            await interaction.reply(`Available commands:\n${commandList}`);
+        }
+    });
+} catch (error) {
+    await interaction.reply('Something went wrong while processing the command.');
+}
 
 // Login to Discord with your bot token
 client.login(TOKEN);
