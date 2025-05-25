@@ -91,6 +91,7 @@ client.on('interactionCreate', async (interaction) => {
         console.log("bot command received");
         if (cfHandle) {
             try {
+                await interaction.deferReply();
                 const response = await fetch(`https://codeforces.com/api/user.info?handles=${cfHandle}`);
                 const data = await response.json();
                 if (data.status === "OK") {
