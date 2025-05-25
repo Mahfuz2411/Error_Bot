@@ -111,14 +111,14 @@ try {
                         }
                         const solvedCount = solvedSet.size;
 
-                        await interaction.reply(
-                            `CF Handle: ${info?.handle}\nRating: ${info?.rating || "Unrated"}\nRank: ${info?.rank || "N/A"}\nProfile: https://codeforces.com/profile/${info?.handle}\nContribution: ${info?.contribution || "N/A"}\nFriend of: ${info?.friendOfCount || 0} users\nOrganization: ${info?.organization || "None"}\nLast Online: ${new Date(info?.lastOnlineTimeSeconds * 1000).toLocaleString()}\nsolved problems: ${solvedCount || 0}`
+                        await interaction.editReply(
+                            `CF Handle: ${info?.handle}\nRating: ${info?.rating || "Unrated"}\nRank: ${info?.rank || "N/A"}\nProfile: https://codeforces.com/profile/${info?.handle}\nContribution: ${info?.contribution || "N/A"}\nFriend of: ${info?.friendOfCount || 0} users\nOrganization: ${info?.organization || "None"}\nLast Online: ${new Date(info?.lastOnlineTimeSeconds * 1000).toLocaleString()}\nSolved problems: ${solvedCount || 0}`
                         );
                     } else {
-                        await interaction.reply(`CF user not found for handle: ${cfHandle}`);
+                        await interaction.editReply(`CF user not found for handle: ${cfHandle}`);
                     }
                 } catch (err) {
-                    await interaction.reply('Error fetching CF user info.');
+                    await interaction.editReply('Error fetching CF user info.');
                 }
             } else {
                 await interaction.reply('User not found.');
