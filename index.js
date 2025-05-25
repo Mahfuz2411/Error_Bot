@@ -74,7 +74,7 @@ const rest = new REST({ version: '9' }).setToken(TOKEN);
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
-    console.log('Interaction received:', interaction);
+    // console.log('Interaction received:', interaction);
 
     const { commandName } = interaction;
 
