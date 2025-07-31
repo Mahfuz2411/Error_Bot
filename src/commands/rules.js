@@ -1,8 +1,16 @@
-const choices = [
-  { name: 'Server', value: 'server' },
-  { name: 'Bot', value: 'bot' },
-  { name: 'Commands', value: 'commands' },
-  { name: 'Report', value: 'report' }
+const options = [
+  { 
+    name: 'type', 
+    type: 3, // STRING
+    description: 'Select the rule type to view',
+    required: true,
+    choices: [
+      { name: 'Server', value: 'server' },
+      { name: 'Bot', value: 'bot' },
+      { name: 'Commands', value: 'commands' },
+      { name: 'Report', value: 'report' }
+    ]
+  }
 ];
 
 const execute = async (interaction) => {
@@ -41,6 +49,6 @@ const execute = async (interaction) => {
 export default {
   name: 'rules',
   description: 'You can view the rules of the bot and with this command.',
-  choices,
+  options,
   execute,
 };
