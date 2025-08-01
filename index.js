@@ -5,20 +5,36 @@ import 'dotenv/config';
 import express from 'express';
 import interactionCreate from './src/events/interactionCreate.js';
 import commands from './src/commands/commandsArray.js';
+import app from './app.js'; 
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 
-app.get('/', (req, res) => {
-    res.send('Bot is alive!');
-});
-app.listen(PORT, () => {
-    console.log(`Web server running on port ${PORT}`);
-});
+
+// app.listen(PORT, () => {
+//     console.log(`Web server running on port ${PORT}`);
+// });
+
+(async () => {
+  try {
+    // console.log({ DB_CONNECTION_STRING });
+
+    // await mongoose.connect(DB_CONNECTION_STRING);
+
+    app.listen(PORT, () =>
+      console.log(`http://localhost:${PORT}/`),
+    );
+  } catch (error) {
+    
+    console.error(error); 
+  }
+})();
+
+
+
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
